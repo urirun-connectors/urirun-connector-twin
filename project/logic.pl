@@ -9,13 +9,14 @@ project_file('tests/test_contract.py', 40, 'python').
 project_file('tests/test_dispatch.py', 209, 'python').
 project_file('tests/test_proof_cache.py', 216, 'python').
 project_file('tests/test_proof_routes.py', 76, 'python').
+project_file('tests/test_recall_routes.py', 134, 'python').
 project_file('tests/test_rollback_parity.py', 380, 'python').
 project_file('tests/test_session.py', 233, 'python').
 project_file('tests/test_twin_connector.py', 1407, 'python').
 project_file('tree.sh', 5, 'shell').
 project_file('urirun_connector_twin/__init__.py', 5, 'python').
 project_file('urirun_connector_twin/browser.py', 328, 'python').
-project_file('urirun_connector_twin/core.py', 615, 'python').
+project_file('urirun_connector_twin/core.py', 705, 'python').
 project_file('urirun_connector_twin/dispatch.py', 73, 'python').
 project_file('urirun_connector_twin/environment.py', 162, 'python').
 project_file('urirun_connector_twin/mock.py', 115, 'python').
@@ -75,6 +76,7 @@ python_function('tests/test_dispatch.py', 'test_plan_from_prompt_route_fallback_
 python_function('tests/test_dispatch.py', 'test_plan_from_prompt_route_calls_annotate_uri', 0, 5, 6).
 python_function('tests/test_dispatch.py', 'test_plan_annotate_handler_returns_plan', 0, 5, 1).
 python_function('tests/test_dispatch.py', 'test_all_three_from_prompt_steps_use_uri', 0, 3, 2).
+python_function('tests/test_recall_routes.py', '_ok_episode', 4, 1, 1).
 python_function('tests/test_rollback_parity.py', '_nav_step', 1, 1, 0).
 python_function('tests/test_rollback_parity.py', '_nav_result_with_inverse', 1, 1, 0).
 python_function('tests/test_rollback_parity.py', 'test_envelope_ledger_filled_from_inverse', 0, 6, 6).
@@ -254,6 +256,8 @@ python_function('urirun_connector_twin/core.py', 'flow_goal_verify', 2, 5, 6).
 python_function('urirun_connector_twin/core.py', 'flow_rollback', 2, 10, 8).
 python_function('urirun_connector_twin/core.py', 'step_evaluate', 7, 9, 4).
 python_function('urirun_connector_twin/core.py', 'flow_execute', 5, 3, 3).
+python_function('urirun_connector_twin/core.py', 'flow_recall', 4, 18, 7).
+python_function('urirun_connector_twin/core.py', 'flow_episode_run', 5, 8, 6).
 python_function('urirun_connector_twin/core.py', 'flow_diagnose', 5, 4, 3).
 python_function('urirun_connector_twin/core.py', 'monitor_event', 3, 1, 2).
 python_function('urirun_connector_twin/core.py', 'bindings', 0, 1, 1).
@@ -352,6 +356,20 @@ python_method('TestProofRoutes', 'test_check_miss_then_gate_probes_records_then_
 python_method('TestProofRoutes', 'test_drift_reprobes', 0, 1, 3).
 python_method('TestProofRoutes', 'test_irreversible_blocks_and_records_nothing', 0, 1, 5).
 python_method('TestProofRoutes', 'test_record_route_rejects_negative', 0, 1, 3).
+python_class('tests/test_recall_routes.py', 'TestFlowRecallRoute').
+python_method('TestFlowRecallRoute', 'setUp', 0, 1, 3).
+python_method('TestFlowRecallRoute', 'tearDown', 0, 2, 2).
+python_method('TestFlowRecallRoute', '_mem', 0, 1, 1).
+python_method('TestFlowRecallRoute', 'test_recall_by_episode_id_direct', 0, 2, 8).
+python_method('TestFlowRecallRoute', 'test_recall_by_intent_and_env_fp', 0, 1, 7).
+python_method('TestFlowRecallRoute', 'test_recall_intent_only_fallback_via_flow_store', 0, 2, 8).
+python_method('TestFlowRecallRoute', 'test_recall_returns_not_found_for_unknown_prompt', 0, 1, 5).
+python_method('TestFlowRecallRoute', 'test_recall_episode_id_missing_returns_not_found', 0, 1, 3).
+python_class('tests/test_recall_routes.py', 'TestFlowEpisodeRun').
+python_method('TestFlowEpisodeRun', 'setUp', 0, 1, 3).
+python_method('TestFlowEpisodeRun', 'tearDown', 0, 2, 2).
+python_method('TestFlowEpisodeRun', 'test_episode_run_missing_episode_returns_error', 0, 2, 4).
+python_method('TestFlowEpisodeRun', 'test_episode_run_dispatches_stored_steps', 0, 1, 9).
 python_class('urirun_connector_twin/proof_cache.py', 'DictProofStore').
 python_method('DictProofStore', 'get', 2, 1, 2).
 python_class('urirun_connector_twin/sandbox.py', 'Scenario').

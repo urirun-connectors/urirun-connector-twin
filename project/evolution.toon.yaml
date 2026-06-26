@@ -1,38 +1,42 @@
-# code2llm/evolution | 102 func | 9f | 2026-06-26
+# code2llm/evolution | 104 func | 9f | 2026-06-26
 # generated in 0.00s
 
-NEXT[5] (ranked by impact):
+NEXT[6] (ranked by impact):
   [1] !! SPLIT           urirun_connector_twin/core.py
-      WHY: 614L, 0 classes, max CC=13
-      EFFORT: ~4h  IMPACT: 7982
+      WHY: 704L, 0 classes, max CC=18
+      EFFORT: ~4h  IMPACT: 12672
 
   [2] !  SPLIT-FUNC      discover_browser_sessions  CC=15  fan=13
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 195
 
-  [3] !  SPLIT-FUNC      select_session  CC=15  fan=7
+  [3] !  SPLIT-FUNC      flow_recall  CC=18  fan=10
+      WHY: CC=18 exceeds 15
+      EFFORT: ~1h  IMPACT: 180
+
+  [4] !  SPLIT-FUNC      select_session  CC=15  fan=7
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 105
 
-  [4] !! SPLIT           connector.manifest.json
+  [5] !! SPLIT           connector.manifest.json
       WHY: 616L, 0 classes, max CC=0
       EFFORT: ~4h  IMPACT: 0
 
-  [5] !! SPLIT           planfile.yaml
+  [6] !! SPLIT           planfile.yaml
       WHY: 591L, 0 classes, max CC=0
       EFFORT: ~4h  IMPACT: 0
 
 
 RISKS[3]:
+  ⚠ Splitting urirun_connector_twin/core.py may break 34 import paths
   ⚠ Splitting connector.manifest.json may break 0 import paths
-  ⚠ Splitting urirun_connector_twin/core.py may break 32 import paths
   ⚠ Splitting planfile.yaml may break 0 import paths
 
 METRICS-TARGET:
-  CC̄:          4.0 → ≤2.8
-  max-CC:      15 → ≤7
+  CC̄:          4.2 → ≤2.9
+  max-CC:      18 → ≤9
   god-modules: 3 → 0
-  high-CC(≥15): 2 → ≤1
+  high-CC(≥15): 3 → ≤1
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -60,4 +64,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=4.0 → now CC̄=4.0
+  prev CC̄=4.0 → now CC̄=4.2

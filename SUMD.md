@@ -163,13 +163,13 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# urirun-connector-twin | 21f 4942L | python:18,shell:2,less:1 | 2026-06-26
-# stats: 289 func | 9 cls | 21 mod | CC̄=3.7 | critical:13 | cycles:0
-# alerts[5]: CC test_append_twin_widget_emits_events_with_inverse=20; CC discover_browser_sessions=15; CC select_session=15; CC _cdp_cookies=13; CC plan_from_prompt_route=13
+# urirun-connector-twin | 22f 5166L | python:19,shell:2,less:1 | 2026-06-26
+# stats: 292 func | 11 cls | 22 mod | CC̄=3.7 | critical:14 | cycles:0
+# alerts[5]: CC test_append_twin_widget_emits_events_with_inverse=20; CC flow_recall=18; CC discover_browser_sessions=15; CC select_session=15; CC _cdp_cookies=13
 # hotspots[5]: _cdp_cookies fan=19; discover_browser_sessions fan=13; mock_start_probe_stop fan=13; plan_from_prompt_route fan=11; flow_preflight fan=10
 # evolution: baseline
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[21]:
+M[22]:
   app.doql.less,32
   project.sh,69
   tests/test_browser_session.py,270
@@ -177,13 +177,14 @@ M[21]:
   tests/test_dispatch.py,209
   tests/test_proof_cache.py,216
   tests/test_proof_routes.py,76
+  tests/test_recall_routes.py,134
   tests/test_rollback_parity.py,380
   tests/test_session.py,233
   tests/test_twin_connector.py,1407
   tree.sh,5
   urirun_connector_twin/__init__.py,5
   urirun_connector_twin/browser.py,328
-  urirun_connector_twin/core.py,615
+  urirun_connector_twin/core.py,705
   urirun_connector_twin/dispatch.py,73
   urirun_connector_twin/environment.py,162
   urirun_connector_twin/mock.py,115
@@ -259,6 +260,11 @@ D:
   tests/test_proof_routes.py:
     e: TestProofRoutes
     TestProofRoutes: setUp(0),tearDown(0),test_check_miss_then_gate_probes_records_then_skip(0),test_drift_reprobes(0),test_irreversible_blocks_and_records_nothing(0),test_record_route_rejects_negative(0)
+  tests/test_recall_routes.py:
+    e: _ok_episode,TestFlowRecallRoute,TestFlowEpisodeRun
+    TestFlowRecallRoute: setUp(0),tearDown(0),_mem(0),test_recall_by_episode_id_direct(0),test_recall_by_intent_and_env_fp(0),test_recall_intent_only_fallback_via_flow_store(0),test_recall_returns_not_found_for_unknown_prompt(0),test_recall_episode_id_missing_returns_not_found(0)
+    TestFlowEpisodeRun: setUp(0),tearDown(0),test_episode_run_missing_episode_returns_error(0),test_episode_run_dispatches_stored_steps(0)
+    _ok_episode(episode_id;goal;steps;env_fp)
   tests/test_rollback_parity.py:
     e: _nav_step,_nav_result_with_inverse,test_envelope_ledger_filled_from_inverse,test_ledger_stays_empty_for_query_step,test_thin_driver_rollback_calls_inverse_lifo,test_thin_driver_rollback_returns_undone_list,test_two_reversible_steps_rolled_back_lifo,test_goal_failure_triggers_rollback,test_goal_none_result_is_treated_as_pass,test_flow_goal_verify_no_uri_is_pass,test_flow_goal_verify_no_goal_arg,test_flow_rollback_empty_ledger,test_flow_rollback_none_inverse_skipped,_undone_uris,_stuck_uri,test_three_path_rollback_convergence_success,test_three_path_rollback_convergence_stuck
     _nav_step(sid)
@@ -421,7 +427,7 @@ D:
     _domain_key(domain)
     _selection(mode;session;domain_key;rationale)
   urirun_connector_twin/core.py:
-    e: _safe_import,_local_browser_profile,_apply_browser_sel,_prompt_result,environment_profile,constraints_from_profile,browser_sessions,browser_profile,plan_from_prompt_route,plan_annotate,plan_generate,mock_create,mock_start_probe_stop,_run_compose,_wait_for_http,step_feasibility,sandbox_probe,_proof_store,proof_check_route,proof_record_route,proof_gate_route,flow_preflight,_target_of,flow_goal_verify,flow_rollback,step_evaluate,flow_execute,flow_diagnose,monitor_event,bindings,manifest,main
+    e: _safe_import,_local_browser_profile,_apply_browser_sel,_prompt_result,environment_profile,constraints_from_profile,browser_sessions,browser_profile,plan_from_prompt_route,plan_annotate,plan_generate,mock_create,mock_start_probe_stop,_run_compose,_wait_for_http,step_feasibility,sandbox_probe,_proof_store,proof_check_route,proof_record_route,proof_gate_route,flow_preflight,_target_of,flow_goal_verify,flow_rollback,step_evaluate,flow_execute,flow_recall,flow_episode_run,flow_diagnose,monitor_event,bindings,manifest,main
     _safe_import(module)
     _local_browser_profile(domain;needs_auth)
     _apply_browser_sel(plan;browser_sel)
@@ -449,6 +455,8 @@ D:
     flow_rollback(ledger;mesh)
     step_evaluate(step;entry;routes;execute;attempt;max_retries;healed)
     flow_execute(flow;execute;max_retries;max_remediations;max_wall_clock)
+    flow_recall(prompt;env_fp;episode_id;node)
+    flow_episode_run(episode_id;execute;max_retries;max_remediations;max_wall_clock)
     flow_diagnose(error;step;routes;environment;surface)
     monitor_event(node;stateSig;narration)
     bindings()
@@ -541,13 +549,14 @@ project_file('tests/test_contract.py', 40, 'python').
 project_file('tests/test_dispatch.py', 209, 'python').
 project_file('tests/test_proof_cache.py', 216, 'python').
 project_file('tests/test_proof_routes.py', 76, 'python').
+project_file('tests/test_recall_routes.py', 134, 'python').
 project_file('tests/test_rollback_parity.py', 380, 'python').
 project_file('tests/test_session.py', 233, 'python').
 project_file('tests/test_twin_connector.py', 1407, 'python').
 project_file('tree.sh', 5, 'shell').
 project_file('urirun_connector_twin/__init__.py', 5, 'python').
 project_file('urirun_connector_twin/browser.py', 328, 'python').
-project_file('urirun_connector_twin/core.py', 615, 'python').
+project_file('urirun_connector_twin/core.py', 705, 'python').
 project_file('urirun_connector_twin/dispatch.py', 73, 'python').
 project_file('urirun_connector_twin/environment.py', 162, 'python').
 project_file('urirun_connector_twin/mock.py', 115, 'python').
@@ -607,6 +616,7 @@ python_function('tests/test_dispatch.py', 'test_plan_from_prompt_route_fallback_
 python_function('tests/test_dispatch.py', 'test_plan_from_prompt_route_calls_annotate_uri', 0, 5, 6).
 python_function('tests/test_dispatch.py', 'test_plan_annotate_handler_returns_plan', 0, 5, 1).
 python_function('tests/test_dispatch.py', 'test_all_three_from_prompt_steps_use_uri', 0, 3, 2).
+python_function('tests/test_recall_routes.py', '_ok_episode', 4, 1, 1).
 python_function('tests/test_rollback_parity.py', '_nav_step', 1, 1, 0).
 python_function('tests/test_rollback_parity.py', '_nav_result_with_inverse', 1, 1, 0).
 python_function('tests/test_rollback_parity.py', 'test_envelope_ledger_filled_from_inverse', 0, 6, 6).
@@ -786,6 +796,8 @@ python_function('urirun_connector_twin/core.py', 'flow_goal_verify', 2, 5, 6).
 python_function('urirun_connector_twin/core.py', 'flow_rollback', 2, 10, 8).
 python_function('urirun_connector_twin/core.py', 'step_evaluate', 7, 9, 4).
 python_function('urirun_connector_twin/core.py', 'flow_execute', 5, 3, 3).
+python_function('urirun_connector_twin/core.py', 'flow_recall', 4, 18, 7).
+python_function('urirun_connector_twin/core.py', 'flow_episode_run', 5, 8, 6).
 python_function('urirun_connector_twin/core.py', 'flow_diagnose', 5, 4, 3).
 python_function('urirun_connector_twin/core.py', 'monitor_event', 3, 1, 2).
 python_function('urirun_connector_twin/core.py', 'bindings', 0, 1, 1).
@@ -884,6 +896,20 @@ python_method('TestProofRoutes', 'test_check_miss_then_gate_probes_records_then_
 python_method('TestProofRoutes', 'test_drift_reprobes', 0, 1, 3).
 python_method('TestProofRoutes', 'test_irreversible_blocks_and_records_nothing', 0, 1, 5).
 python_method('TestProofRoutes', 'test_record_route_rejects_negative', 0, 1, 3).
+python_class('tests/test_recall_routes.py', 'TestFlowRecallRoute').
+python_method('TestFlowRecallRoute', 'setUp', 0, 1, 3).
+python_method('TestFlowRecallRoute', 'tearDown', 0, 2, 2).
+python_method('TestFlowRecallRoute', '_mem', 0, 1, 1).
+python_method('TestFlowRecallRoute', 'test_recall_by_episode_id_direct', 0, 2, 8).
+python_method('TestFlowRecallRoute', 'test_recall_by_intent_and_env_fp', 0, 1, 7).
+python_method('TestFlowRecallRoute', 'test_recall_intent_only_fallback_via_flow_store', 0, 2, 8).
+python_method('TestFlowRecallRoute', 'test_recall_returns_not_found_for_unknown_prompt', 0, 1, 5).
+python_method('TestFlowRecallRoute', 'test_recall_episode_id_missing_returns_not_found', 0, 1, 3).
+python_class('tests/test_recall_routes.py', 'TestFlowEpisodeRun').
+python_method('TestFlowEpisodeRun', 'setUp', 0, 1, 3).
+python_method('TestFlowEpisodeRun', 'tearDown', 0, 2, 2).
+python_method('TestFlowEpisodeRun', 'test_episode_run_missing_episode_returns_error', 0, 2, 4).
+python_method('TestFlowEpisodeRun', 'test_episode_run_dispatches_stored_steps', 0, 1, 9).
 python_class('urirun_connector_twin/proof_cache.py', 'DictProofStore').
 python_method('DictProofStore', 'get', 2, 1, 2).
 python_class('urirun_connector_twin/sandbox.py', 'Scenario').
@@ -914,7 +940,7 @@ sumd_interface('cli', '').
 
 ## Call Graph
 
-*84 nodes · 108 edges · 9 modules · CC̄=4.0*
+*84 nodes · 108 edges · 9 modules · CC̄=4.2*
 
 ### Hubs (by degree)
 
@@ -925,15 +951,15 @@ sumd_interface('cli', '').
 | `discover_browser_sessions` *(in urirun_connector_twin.browser)* | 15 ⚠ | 4 | 17 | **21** |
 | `build_imperative_plan` *(in urirun_connector_twin.planner)* | 8 | 6 | 14 | **20** |
 | `plan_from_prompt_route` *(in urirun_connector_twin.core)* | 13 ⚠ | 0 | 18 | **18** |
-| `preflight_step` *(in urirun_connector_twin.proof_cache)* | 9 | 1 | 15 | **16** |
 | `mock_start_probe_stop` *(in urirun_connector_twin.core)* | 7 | 0 | 16 | **16** |
+| `preflight_step` *(in urirun_connector_twin.proof_cache)* | 9 | 1 | 15 | **16** |
 | `annotate_steps` *(in urirun_connector_twin.planner)* | 8 | 2 | 13 | **15** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/if-uri/urirun-connector-twin
 # generated in 0.04s
 # nodes: 84 | edges: 108 | modules: 9
-# CC̄=4.0
+# CC̄=4.2
 
 HUBS[20]:
   urirun_connector_twin.browser._cdp_cookies
@@ -946,36 +972,36 @@ HUBS[20]:
     CC=8  in:6  out:14  total:20
   urirun_connector_twin.core.plan_from_prompt_route
     CC=13  in:0  out:18  total:18
-  urirun_connector_twin.proof_cache.preflight_step
-    CC=9  in:1  out:15  total:16
   urirun_connector_twin.core.mock_start_probe_stop
     CC=7  in:0  out:16  total:16
+  urirun_connector_twin.proof_cache.preflight_step
+    CC=9  in:1  out:15  total:16
   urirun_connector_twin.planner.annotate_steps
     CC=8  in:2  out:13  total:15
-  urirun_connector_twin.browser.select_session
-    CC=15  in:3  out:11  total:14
   urirun_connector_twin.core.flow_preflight
     CC=9  in:0  out:14  total:14
+  urirun_connector_twin.browser.select_session
+    CC=15  in:3  out:11  total:14
   urirun_connector_twin.sandbox._simulated_probe
     CC=1  in:1  out:12  total:13
   urirun_connector_twin.core.step_feasibility
     CC=4  in:0  out:12  total:12
-  urirun_connector_twin.core.browser_profile
-    CC=7  in:0  out:12  total:12
-  urirun_connector_twin.prompt_plan._raw_steps_for_target
-    CC=13  in:1  out:11  total:12
-  urirun_connector_twin.core._prompt_result
-    CC=5  in:1  out:11  total:12
   urirun_connector_twin.proof_cache.proof_record
     CC=10  in:2  out:10  total:12
-  urirun_connector_twin.prompt_plan.derive_task_target
-    CC=2  in:5  out:6  total:11
+  urirun_connector_twin.core._prompt_result
+    CC=5  in:1  out:11  total:12
+  urirun_connector_twin.prompt_plan._raw_steps_for_target
+    CC=13  in:1  out:11  total:12
+  urirun_connector_twin.core.browser_profile
+    CC=7  in:0  out:12  total:12
   urirun_connector_twin.dispatch.uri_call
     CC=10  in:6  out:5  total:11
-  urirun_connector_twin.browser._selection
-    CC=6  in:3  out:7  total:10
+  urirun_connector_twin.prompt_plan.derive_task_target
+    CC=2  in:5  out:6  total:11
   urirun_connector_twin.mock.generate_mock
     CC=5  in:4  out:6  total:10
+  urirun_connector_twin.browser._selection
+    CC=6  in:3  out:7  total:10
 
 MODULES:
   urirun_connector_twin.browser  [11 funcs]

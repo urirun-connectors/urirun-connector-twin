@@ -567,6 +567,96 @@ def flow_execute(
     )
 
 
+@conn.handler("flow/query/recall",
+              meta={"label": "Return a cached flow plan by intent × env — the pre-LLM recall gate as URI"})
+def flow_recall(
+    prompt: str = "",
+    env_fp: str = "",
+    episode_id: str = "",
+    node: str = "host",
+) -> dict:
+    """URI boundary for the recall gate: check episode_store then flow_store before the LLM.
+
+    Priority:
+      1. episode_id — direct lookup (content-addressed, always wins if provided)
+      2. intent_sig × env_fp — recall_episode (env-conditioned, strongest match)
+      3. intent_sig alone — recall_flow_by_intent (env-agnostic fallback)
+
+    Returns {found: True, steps, source, episode_id?} or {found: False, steps: []}.
+    Callers use steps to build a flow dict and skip make_flow when found=True."""
+    from urirun.node.twin_store import durable_memory  # noqa: PLC0415
+    mem = durable_memory()
+
+    # 1. Direct episode lookup
+    if episode_id:
+        ep = mem.episode_store.get(episode_id)
+        if ep and (ep.get("outcome") or {}).get("status") == "ok":
+            steps = (ep.get("plan") or {}).get("steps") or []
+            if steps:
+                return urirun.ok(found=True, steps=steps, source="episode",
+                                 episode_id=episode_id, goal=ep.get("goal"))
+
+    # 2. Intent × env fingerprint (episode_store)
+    if prompt and env_fp:
+        from urirun.node.episode import intent_signature  # noqa: PLC0415
+        sig = intent_signature(prompt)
+        ep = mem.recall_episode(sig, env_fp)
+        if ep:
+            steps = (ep.get("plan") or {}).get("steps") or []
+            if steps:
+                return urirun.ok(found=True, steps=steps, source="episode",
+                                 episode_id=ep.get("episode_id"), goal=ep.get("goal"))
+
+    # 3. Intent-only fallback (flow_store — no env constraint)
+    if prompt:
+        rec = mem.recall_flow_by_intent(prompt)
+        if rec:
+            steps = rec.get("steps") or []
+            if steps:
+                return urirun.ok(found=True, steps=steps, source="flow_store",
+                                 flow_key=rec.get("flowKey"), goal=rec.get("prompt"))
+
+    return urirun.ok(found=False, steps=[])
+
+
+@conn.handler("flow/episode/command/run",
+              meta={"label": "Run the flow plan stored in an episode (plan atom → execute)"})
+def flow_episode_run(
+    episode_id: str,
+    execute: bool = True,
+    max_retries: int = 1,
+    max_remediations: int = 6,
+    max_wall_clock: float = 180.0,
+) -> dict:
+    """Content-addressed flow execution: look up plan atom by episode_id, then run it.
+
+    Makes any episodic plan a first-class dispatchable URI — the plan lives in the same
+    address space as the facts and actions it operates on.  Idempotent: re-running with
+    the same episode_id re-executes the same step sequence against current world state."""
+    from urirun.node.twin_store import durable_memory  # noqa: PLC0415
+    import urirun.v2_service as _svc
+    from urirun.node.flow import execute_flow
+    mem = durable_memory()
+    ep = mem.episode_store.get(episode_id)
+    if not ep:
+        return urirun.ok(ok=False, found=False,
+                         error={"category": "NOT_FOUND", "message": f"episode {episode_id!r} not found"})
+    steps = (ep.get("plan") or {}).get("steps") or []
+    if not steps:
+        return urirun.ok(ok=False, found=False,
+                         error={"category": "NOT_FOUND", "message": f"episode {episode_id!r} has no plan steps"})
+    flow = {"steps": steps, "task": {"id": "recall", "source": "episode", "title": ep.get("goal") or ""}}
+    mode = "execute" if execute else "dry-run"
+    dispatch = lambda uri, payload=None: _svc.call(uri, payload or {}, {}, mode=mode)
+    return execute_flow(
+        flow, {}, {}, execute=execute,
+        dispatch_uri=dispatch,
+        max_retries=max_retries,
+        max_remediations=max_remediations,
+        max_wall_clock=max_wall_clock,
+    )
+
+
 @conn.handler("flow/command/diagnose",
               meta={"label": "Match a step error against the diagnostics playbook"})
 def flow_diagnose(

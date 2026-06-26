@@ -7,15 +7,15 @@
 - **Primary Language**: python
 - **Languages**: python: 10, yaml: 4, shell: 2, json: 1, toml: 1
 - **Analysis Mode**: static
-- **Total Functions**: 102
+- **Total Functions**: 104
 - **Total Classes**: 2
 - **Modules**: 18
-- **Entry Points**: 30
+- **Entry Points**: 32
 
 ## Architecture by Module
 
 ### urirun_connector_twin.core
-- **Functions**: 32
+- **Functions**: 34
 - **File**: `core.py`
 
 ### urirun_connector_twin.prompt_plan
@@ -55,6 +55,13 @@
 ## Key Entry Points
 
 Main execution flows into the system:
+
+### urirun_connector_twin.core.flow_recall
+> URI boundary for the recall gate: check episode_store then flow_store before the LLM.
+
+Priority:
+  1. episode_id — direct lookup (content-addressed, a
+- **Calls**: conn.handler, durable_memory, urirun.ok, mem.episode_store.get, intent_signature, mem.recall_episode, mem.recall_flow_by_intent, None.get
 
 ### urirun_connector_twin.core.plan_from_prompt_route
 > Full twin loop from a single NL prompt.
@@ -107,6 +114,12 @@ Priority: auth cookie confirmed > tab on domain > real profile > any reach
 Makes the decision observable and switchable: callers replace this URI
 to inject differen
 - **Calls**: conn.handler, can_retry_step, urirun.ok, entry.get, urirun.ok, diagnosis.get, None.get, urirun.ok
+
+### urirun_connector_twin.core.flow_episode_run
+> Content-addressed flow execution: look up plan atom by episode_id, then run it.
+
+Makes any episodic plan a first-class dispatchable URI — the plan liv
+- **Calls**: conn.handler, durable_memory, mem.episode_store.get, execute_flow, urirun.ok, None.get, urirun.ok, _svc.call
 
 ### urirun_connector_twin.core.mock_create
 > Generate a reversible Docker Compose environment for testing infeasible steps.
@@ -195,6 +208,9 @@ Exposes execute_flow() as a URI boundary so callers can point to a different
 twin conn
 - **Calls**: conn.handler, execute_flow, _svc.call
 
+### urirun_connector_twin.proof_cache.DictProofStore.get
+- **Calls**: None.get, super
+
 ### urirun_connector_twin.core.monitor_event
 > Receive a twin state-transition event (distributed to /events?scheme=twin SSE).
 - **Calls**: conn.handler, urirun.ok
@@ -205,25 +221,19 @@ twin conn
 ### urirun_connector_twin.core.main
 - **Calls**: conn.cli, urirun.load_manifest
 
-### urirun_connector_twin.proof_cache.DictProofStore.get
-- **Calls**: None.get, super
-
 ### urirun_connector_twin.core.bindings
 - **Calls**: conn.bindings
-
-### urirun_connector_twin.dispatch.set_transport
-> Inject a transport fn(uri, payload) -> dict used before v2_service.
-
-Pass None to clear.  Used by tests to stub URI calls and by the node
-runner to bi
-
-### urirun_connector_twin.prompt_plan._file_write_steps
 
 ## Process Flows
 
 Key execution flows identified:
 
-### Flow 1: plan_from_prompt_route
+### Flow 1: flow_recall
+```
+flow_recall [urirun_connector_twin.core]
+```
+
+### Flow 2: plan_from_prompt_route
 ```
 plan_from_prompt_route [urirun_connector_twin.core]
   └─ →> derive_task_target
@@ -237,7 +247,7 @@ plan_from_prompt_route [urirun_connector_twin.core]
   └─ →> uri_call
 ```
 
-### Flow 2: mock_start_probe_stop
+### Flow 3: mock_start_probe_stop
 ```
 mock_start_probe_stop [urirun_connector_twin.core]
   └─ →> probe
@@ -254,22 +264,22 @@ mock_start_probe_stop [urirun_connector_twin.core]
       └─> _compose_yaml
 ```
 
-### Flow 3: flow_preflight
+### Flow 4: flow_preflight
 ```
 flow_preflight [urirun_connector_twin.core]
 ```
 
-### Flow 4: flow_rollback
+### Flow 5: flow_rollback
 ```
 flow_rollback [urirun_connector_twin.core]
 ```
 
-### Flow 5: select_best_session
+### Flow 6: select_best_session
 ```
 select_best_session [urirun_connector_twin.browser]
 ```
 
-### Flow 6: browser_profile
+### Flow 7: browser_profile
 ```
 browser_profile [urirun_connector_twin.core]
   └─ →> discover_browser_sessions
@@ -284,7 +294,7 @@ browser_profile [urirun_connector_twin.core]
       └─> _extract_url
 ```
 
-### Flow 7: step_feasibility
+### Flow 8: step_feasibility
 ```
 step_feasibility [urirun_connector_twin.core]
   └─ →> probe
@@ -296,31 +306,14 @@ step_feasibility [urirun_connector_twin.core]
           └─> _route_suffix
 ```
 
-### Flow 8: step_evaluate
+### Flow 9: step_evaluate
 ```
 step_evaluate [urirun_connector_twin.core]
 ```
 
-### Flow 9: mock_create
+### Flow 10: flow_episode_run
 ```
-mock_create [urirun_connector_twin.core]
-  └─ →> probe
-      └─> _host_os_info
-      └─> _constraints_via_uri
-          └─> _constraints_from_profile_local
-  └─ →> build_imperative_plan
-      └─> extract_steps_from_flow
-      └─> annotate_steps
-          └─> _is_infeasible
-  └─ →> generate_mock
-      └─> _resolve_service
-          └─> _detect_service
-      └─> _compose_yaml
-```
-
-### Flow 10: flow_goal_verify
-```
-flow_goal_verify [urirun_connector_twin.core]
+flow_episode_run [urirun_connector_twin.core]
 ```
 
 ## Key Classes
@@ -351,6 +344,7 @@ Key functions that process and transform data:
 
 Functions exposed as public API (no underscore prefix):
 
+- `urirun_connector_twin.core.flow_recall` - 22 calls
 - `urirun_connector_twin.core.plan_from_prompt_route` - 18 calls
 - `urirun_connector_twin.browser.discover_browser_sessions` - 17 calls
 - `urirun_connector_twin.environment.probe` - 17 calls
@@ -366,6 +360,7 @@ Functions exposed as public API (no underscore prefix):
 - `urirun_connector_twin.browser.select_session` - 11 calls
 - `urirun_connector_twin.core.step_evaluate` - 11 calls
 - `urirun_connector_twin.proof_cache.proof_record` - 10 calls
+- `urirun_connector_twin.core.flow_episode_run` - 10 calls
 - `urirun_connector_twin.core.mock_create` - 7 calls
 - `urirun_connector_twin.core.flow_goal_verify` - 7 calls
 - `urirun_connector_twin.mock.generate_mock` - 6 calls
@@ -380,17 +375,15 @@ Functions exposed as public API (no underscore prefix):
 - `urirun_connector_twin.sandbox.probe_reversibility` - 4 calls
 - `urirun_connector_twin.dispatch.value_of` - 4 calls
 - `urirun_connector_twin.planner.extract_steps_from_flow` - 4 calls
+- `urirun_connector_twin.proof_cache.proof_check` - 4 calls
 - `urirun_connector_twin.core.sandbox_probe` - 4 calls
 - `urirun_connector_twin.core.proof_gate_route` - 4 calls
 - `urirun_connector_twin.core.flow_diagnose` - 4 calls
-- `urirun_connector_twin.proof_cache.proof_check` - 4 calls
 - `urirun_connector_twin.sandbox.scenario_for_uri` - 3 calls
 - `urirun_connector_twin.prompt_plan.steps_from_prompt` - 3 calls
 - `urirun_connector_twin.prompt_plan.plan_from_prompt` - 3 calls
 - `urirun_connector_twin.core.environment_profile` - 3 calls
 - `urirun_connector_twin.core.plan_annotate` - 3 calls
-- `urirun_connector_twin.core.flow_execute` - 3 calls
-- `urirun_connector_twin.core.monitor_event` - 2 calls
 
 ## System Interactions
 
@@ -398,6 +391,11 @@ How components interact:
 
 ```mermaid
 graph TD
+    flow_recall --> handler
+    flow_recall --> durable_memory
+    flow_recall --> ok
+    flow_recall --> get
+    flow_recall --> intent_signature
     plan_from_prompt_rou --> handler
     plan_from_prompt_rou --> derive_task_target
     plan_from_prompt_rou --> plan_from_prompt
@@ -423,11 +421,6 @@ graph TD
     browser_profile --> handler
     browser_profile --> discover_browser_ses
     browser_profile --> select_session
-    browser_profile --> ok
-    browser_profile --> derive_task_target
-    step_feasibility --> handler
-    step_feasibility --> probe
-    step_feasibility --> annotate_steps
 ```
 
 ## Reverse Engineering Guidelines
