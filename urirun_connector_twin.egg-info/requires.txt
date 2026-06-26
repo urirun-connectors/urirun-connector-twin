@@ -1,0 +1,4 @@
+urirun @ git+https://github.com/if-uri/urirun.git#subdirectory=adapters/python
+
+[test]
+pytest>=8

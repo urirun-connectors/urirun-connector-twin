@@ -1,0 +1,5 @@
+[console_scripts]
+urirun-connector-twin = urirun_connector_twin.core:main
+
+[urirun.bindings]
+twin = urirun_connector_twin.core:bindings
