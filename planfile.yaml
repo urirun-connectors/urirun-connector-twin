@@ -381,19 +381,6 @@ sprints:
     model_hints:
       planning: balanced
       implementation: balanced
-  - id: ticket-ddf72135
-    name: Fix unused-imports issues
-    description: Resolve 2 unused-imports issues in urirun_connector_twin/session.py
-    task_type: prefactor
-    priority: medium
-    estimate: 1d
-    files:
-    - urirun_connector_twin/session.py
-    rule_id: unused-imports
-    count: 2
-    model_hints:
-      planning: balanced
-      implementation: balanced
   - id: ticket-d8be57b8
     name: Fix string-concat issues
     description: Resolve 1 string-concat issues in urirun_connector_twin/sandbox.py
@@ -472,16 +459,29 @@ sprints:
     model_hints:
       planning: balanced
       implementation: balanced
-  - id: ticket-748b481c
-    name: Fix relative-imports issues
-    description: Resolve 4 relative-imports issues in urirun_connector_twin/session.py
+  - id: ticket-cf0b306b
+    name: Fix smart-return-type issues
+    description: Resolve 1 smart-return-type issues in tests/test_contract.py
     task_type: prefactor
     priority: medium
-    estimate: 2d
+    estimate: 1d
     files:
-    - urirun_connector_twin/session.py
-    rule_id: relative-imports
-    count: 4
+    - tests/test_contract.py
+    rule_id: smart-return-type
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-4ebb7fb0
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in tests/test_contract.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - tests/test_contract.py
+    rule_id: unused-imports
+    count: 2
     model_hints:
       planning: balanced
       implementation: balanced

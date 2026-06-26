@@ -5,11 +5,11 @@
 
 - **Project**: /home/tom/github/if-uri/urirun-connector-twin
 - **Primary Language**: python
-- **Languages**: python: 10, yaml: 4, shell: 2, json: 1, toml: 1
+- **Languages**: python: 9, yaml: 4, shell: 2, json: 1, toml: 1
 - **Analysis Mode**: static
 - **Total Functions**: 92
 - **Total Classes**: 1
-- **Modules**: 18
+- **Modules**: 17
 - **Entry Points**: 25
 
 ## Architecture by Module
@@ -330,8 +330,8 @@ Functions exposed as public API (no underscore prefix):
 - `urirun_connector_twin.core.mock_create` - 7 calls
 - `urirun_connector_twin.core.flow_goal_verify` - 7 calls
 - `urirun_connector_twin.mock.generate_mock` - 6 calls
-- `urirun_connector_twin.core.browser_sessions` - 6 calls
 - `urirun_connector_twin.prompt_plan.derive_task_target` - 6 calls
+- `urirun_connector_twin.core.browser_sessions` - 6 calls
 - `urirun_connector_twin.dispatch.uri_call` - 5 calls
 - `urirun_connector_twin.core.constraints_from_profile` - 5 calls
 - `urirun_connector_twin.core.plan_generate` - 5 calls
@@ -341,11 +341,11 @@ Functions exposed as public API (no underscore prefix):
 - `urirun_connector_twin.core.sandbox_probe` - 4 calls
 - `urirun_connector_twin.core.flow_diagnose` - 4 calls
 - `urirun_connector_twin.sandbox.scenario_for_uri` - 3 calls
+- `urirun_connector_twin.prompt_plan.steps_from_prompt` - 3 calls
+- `urirun_connector_twin.prompt_plan.plan_from_prompt` - 3 calls
 - `urirun_connector_twin.core.environment_profile` - 3 calls
 - `urirun_connector_twin.core.plan_annotate` - 3 calls
 - `urirun_connector_twin.core.flow_execute` - 3 calls
-- `urirun_connector_twin.prompt_plan.steps_from_prompt` - 3 calls
-- `urirun_connector_twin.prompt_plan.plan_from_prompt` - 3 calls
 - `urirun_connector_twin.core.monitor_event` - 2 calls
 - `urirun_connector_twin.core.manifest` - 2 calls
 - `urirun_connector_twin.core.main` - 2 calls

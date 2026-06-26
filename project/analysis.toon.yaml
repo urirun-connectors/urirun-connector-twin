@@ -1,4 +1,4 @@
-# code2llm | 18f 3169L | python:10,yaml:4,shell:2,json:1,toml:1 | 2026-06-26
+# code2llm | 17f 3145L | python:9,yaml:4,shell:2,json:1,toml:1 | 2026-06-26
 # generated in 0.00s
 # CC̅=4.1 | critical:2/92 | dups:0 | cycles:0
 
@@ -67,7 +67,6 @@ LAYERS:
   │ planner                    127L  0C    7m  CC=8      ←1
   │ mock                       114L  0C    4m  CC=5      ←1
   │ dispatch                    72L  0C    3m  CC=10     ←2
-  │ session                     24L  0C    0m  CC=0.0    ←0
   │ __init__                     4L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0

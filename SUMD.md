@@ -163,8 +163,8 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# urirun-connector-twin | 18f 4306L | python:15,shell:2,less:1 | 2026-06-26
-# stats: 277 func | 1 cls | 18 mod | CC̄=3.6 | critical:10 | cycles:0
+# urirun-connector-twin | 18f 4386L | python:15,shell:2,less:1 | 2026-06-26
+# stats: 279 func | 2 cls | 18 mod | CC̄=3.6 | critical:10 | cycles:0
 # alerts[5]: CC test_append_twin_widget_emits_events_with_inverse=17; CC discover_browser_sessions=15; CC select_session=15; CC _cdp_cookies=13; CC plan_from_prompt_route=13
 # hotspots[5]: _cdp_cookies fan=19; discover_browser_sessions fan=13; mock_start_probe_stop fan=13; plan_from_prompt_route fan=11; flow_preflight fan=10
 # evolution: baseline
@@ -173,10 +173,11 @@ M[18]:
   app.doql.less,32
   project.sh,69
   tests/test_browser_session.py,270
+  tests/test_contract.py,40
   tests/test_dispatch.py,209
   tests/test_rollback_parity.py,380
   tests/test_session.py,233
-  tests/test_twin_connector.py,1275
+  tests/test_twin_connector.py,1340
   tree.sh,5
   urirun_connector_twin/__init__.py,5
   urirun_connector_twin/browser.py,328
@@ -187,7 +188,6 @@ M[18]:
   urirun_connector_twin/planner.py,128
   urirun_connector_twin/prompt_plan.py,260
   urirun_connector_twin/sandbox.py,163
-  urirun_connector_twin/session.py,25
 D:
   tests/test_browser_session.py:
     e: test_derive_task_target_linkedin,test_derive_task_target_google,test_derive_task_target_unknown,test_derive_task_target_twitter,test_extract_chrome_info_with_port,test_extract_chrome_info_no_port,test_extract_chrome_info_not_chrome,test_extract_chrome_info_tmp_profile,_make_session,test_select_best_auth_confirmed,test_select_best_holds_target_fallback,test_select_best_needs_login_when_no_auth,test_select_best_no_chrome,test_select_best_no_auth_required,test_extract_url,test_extract_domain_from_url,test_extract_domain_from_keyword,test_extract_text_to_type_quoted,test_extract_text_to_type_after_verb,test_prompt_derive_social_post,test_prompt_derive_search,test_prompt_derive_screenshot,test_prompt_derive_browser_open,test_prompt_derive_unknown,test_steps_from_prompt_social_post,test_steps_from_prompt_screenshot,test_steps_from_prompt_search,test_steps_from_prompt_unknown_fallback,test_plan_from_prompt_structure,test_plan_from_prompt_social_post_metadata,test_browser_sessions_route_no_chrome,test_browser_profile_route_no_chrome,test_plan_from_prompt_route
@@ -224,6 +224,9 @@ D:
     test_browser_sessions_route_no_chrome(monkeypatch)
     test_browser_profile_route_no_chrome(monkeypatch)
     test_plan_from_prompt_route(monkeypatch)
+  tests/test_contract.py:
+    e: TestTwinConnectorContract
+    TestTwinConnectorContract: test_twin_routes_present(0)
   tests/test_dispatch.py:
     e: clean_transport,test_uri_call_fallback_triggers_on_no_mesh,test_uri_call_fallback_none_returns_none,test_value_of_extracts_value_key,test_value_of_extracts_nested_result_value,test_value_of_none_input,test_value_of_no_value_key,test_transport_is_called_first,test_transport_result_not_ok_falls_to_fallback,test_transport_exception_falls_to_fallback,test_set_transport_none_clears,test_plan_from_prompt_route_calls_environment_uri,test_plan_from_prompt_route_calls_browser_uri_when_domain,test_plan_from_prompt_route_fallback_when_no_transport,test_plan_from_prompt_route_calls_annotate_uri,test_plan_annotate_handler_returns_plan,test_all_three_from_prompt_steps_use_uri
     clean_transport()
@@ -297,7 +300,7 @@ D:
     test_probe_adds_infeasible_when_needs_login(monkeypatch)
     test_browser_profile_handler_no_chrome(monkeypatch)
   tests/test_twin_connector.py:
-    e: test_probe_returns_host_info_without_node,test_probe_with_unknown_node_adds_warning,test_probe_merges_kvm_profile,test_constraints_from_profile_wayland_type,test_annotate_infeasible_os_type_step,test_annotate_cdp_fill_is_feasible,test_annotate_navigate_is_reversible,test_annotate_fill_is_irreversible,test_build_plan_counts_infeasible_steps,test_build_plan_no_infeasible_when_clean,test_detect_service_linkedin,test_detect_service_fallback,test_generate_mock_returns_reversible,test_generate_mock_compose_yaml,test_generate_mock_addresses_infeasible_uris,test_generate_mock_has_test_uri,test_connector_bindings_has_twin_routes,test_step_feasibility_handler_clean,test_mock_create_handler,test_sandbox_probe_simulated_reversible,test_sandbox_probe_simulated_irreversible,test_sandbox_probe_noop,test_scenario_for_uri_selects_builtin,test_sandbox_probe_handler_wires_up,test_step_evaluate_retry_on_transient,test_step_evaluate_heal_when_auto_applicable,test_step_evaluate_rollback_when_healed,test_step_evaluate_rollback_dry_run,test_flow_rollback_empty_ledger,test_flow_rollback_handler_in_bindings,test_flow_rollback_ledger_calls_inverses,test_abort_envelope_dispatches_rollback_ledger,test_evaluate_step_next_routes_through_dispatch_uri,test_evaluate_step_next_in_process_fallback,test_flow_preflight_no_cdp_steps_returns_empty,test_flow_preflight_extracts_cdp_targets,test_flow_preflight_dedups_same_host,test_flow_preflight_handles_ensure_failure_gracefully,test_execute_flow_auto_envelope_uses_thin_driver,test_execute_flow_without_dispatch_uses_orchestrator,_make_twin_memory,_make_dispatch_for_memory,test_build_thin_plan_injects_drift_and_remember_for_kvm_steps,test_build_thin_plan_kvm_always_gets_drift,test_build_thin_plan_no_kvm_no_drift,test_build_thin_plan_dry_run_no_drift,test_memory_dispatch_drift_sets_baseline_on_first_run,test_memory_dispatch_drift_detects_change,test_memory_dispatch_remember_updates_store,test_execute_flow_with_memory_injects_drift_steps,test_goal_verify_no_uri_is_noop,test_goal_verify_no_goal_at_all_is_noop,test_goal_verify_contains_passes,test_goal_verify_contains_fails,test_goal_verify_equals_passes,test_goal_verify_present_passes,test_goal_verify_transport_exception_returns_ok_false,test_goal_verify_dispatch_ok_false_fails_goal,test_mock_start_probe_stop_no_docker,test_mock_start_probe_stop_structure_has_mock_fields,test_thin_goal_verify_pass_returns_none,test_thin_goal_verify_fail_returns_rollback_dict,test_thin_goal_verify_registry_not_found_is_pass,test_thin_goal_verify_none_dispatch_result_is_pass,test_flow_execute_handler_dry_run,test_flow_execute_handler_execute_mode,test_flow_execute_handler_step_failure_returns_ok_false,test_flow_execute_in_bindings,test_flow_diagnose_no_match_returns_found_false,test_flow_diagnose_service_stopped_matches,test_flow_diagnose_returns_remediation_list,test_flow_diagnose_in_bindings,test_step_inverse_query_is_reversible_no_inverse,test_step_inverse_navigate_is_reversible_with_back,test_step_inverse_session_ensure_reversible,test_step_inverse_click_is_irreversible,test_step_inverse_fill_is_irreversible,test_step_inverse_wait_is_reversible,test_step_inverse_unknown_command_is_irreversible,test_step_inverse_unknown_query_is_reversible,test_is_infra_step_skips_drift_and_preflight,test_is_infra_step_passes_real_steps,test_append_twin_widget_emits_events_with_inverse,test_convergence_navigate_inverse_matches_rollback_ledger,test_convergence_query_no_inverse_no_ledger,test_inverse_from_results_prefers_connector_over_static
+    e: test_probe_returns_host_info_without_node,test_probe_with_unknown_node_adds_warning,test_probe_merges_kvm_profile,test_constraints_from_profile_wayland_type,test_annotate_infeasible_os_type_step,test_annotate_cdp_fill_is_feasible,test_annotate_navigate_is_reversible,test_annotate_fill_is_irreversible,test_build_plan_counts_infeasible_steps,test_build_plan_no_infeasible_when_clean,test_detect_service_linkedin,test_detect_service_fallback,test_generate_mock_returns_reversible,test_generate_mock_compose_yaml,test_generate_mock_addresses_infeasible_uris,test_generate_mock_has_test_uri,test_connector_bindings_has_twin_routes,test_step_feasibility_handler_clean,test_mock_create_handler,test_sandbox_probe_simulated_reversible,test_sandbox_probe_simulated_irreversible,test_sandbox_probe_noop,test_scenario_for_uri_selects_builtin,test_sandbox_probe_handler_wires_up,test_step_evaluate_retry_on_transient,test_step_evaluate_heal_when_auto_applicable,test_step_evaluate_rollback_when_healed,test_step_evaluate_rollback_dry_run,test_flow_rollback_empty_ledger,test_flow_rollback_handler_in_bindings,test_flow_rollback_ledger_calls_inverses,test_abort_envelope_dispatches_rollback_ledger,test_evaluate_step_next_routes_through_dispatch_uri,test_evaluate_step_next_in_process_fallback,test_flow_preflight_no_cdp_steps_returns_empty,test_flow_preflight_extracts_cdp_targets,test_flow_preflight_dedups_same_host,test_flow_preflight_handles_ensure_failure_gracefully,test_execute_flow_auto_envelope_uses_thin_driver,test_execute_flow_without_dispatch_uses_orchestrator,_make_twin_memory,_make_dispatch_for_memory,test_build_thin_plan_injects_drift_and_remember_for_kvm_steps,test_build_thin_plan_kvm_always_gets_drift,test_build_thin_plan_no_kvm_no_drift,test_build_thin_plan_dry_run_no_drift,test_memory_dispatch_drift_sets_baseline_on_first_run,test_memory_dispatch_drift_detects_change,test_memory_dispatch_remember_updates_store,test_execute_flow_with_memory_injects_drift_steps,test_goal_verify_no_uri_is_noop,test_goal_verify_no_goal_at_all_is_noop,test_goal_verify_contains_passes,test_goal_verify_contains_fails,test_goal_verify_equals_passes,test_goal_verify_present_passes,test_goal_verify_transport_exception_returns_ok_false,test_goal_verify_dispatch_ok_false_fails_goal,test_mock_start_probe_stop_no_docker,test_mock_start_probe_stop_structure_has_mock_fields,test_thin_goal_verify_pass_returns_none,test_thin_goal_verify_fail_returns_rollback_dict,test_thin_goal_verify_registry_not_found_is_pass,test_thin_goal_verify_none_dispatch_result_is_pass,test_flow_execute_handler_dry_run,test_flow_execute_handler_execute_mode,test_flow_execute_handler_step_failure_returns_ok_false,test_flow_execute_in_bindings,test_flow_diagnose_no_match_returns_found_false,test_flow_diagnose_service_stopped_matches,test_flow_diagnose_returns_remediation_list,test_flow_diagnose_in_bindings,test_step_inverse_query_is_reversible_no_inverse,test_step_inverse_navigate_is_reversible_with_back,test_step_inverse_session_ensure_reversible,test_step_inverse_click_is_irreversible,test_step_inverse_fill_is_irreversible,test_step_inverse_wait_is_reversible,test_step_inverse_unknown_command_is_irreversible,test_step_inverse_unknown_query_is_reversible,test_is_infra_step_skips_drift_and_preflight,test_is_infra_step_passes_real_steps,test_append_twin_widget_emits_events_with_inverse,test_convergence_navigate_inverse_matches_rollback_ledger,test_convergence_query_no_inverse_no_ledger,test_inverse_from_results_prefers_connector_over_static,test_inverse_from_results_handles_path_based_inverse,test_convergence_kvm_navigate_path_inverse_matches_ledger
     test_probe_returns_host_info_without_node(monkeypatch)
     test_probe_with_unknown_node_adds_warning(monkeypatch)
     test_probe_merges_kvm_profile(monkeypatch)
@@ -384,6 +387,8 @@ D:
     test_convergence_navigate_inverse_matches_rollback_ledger(monkeypatch)
     test_convergence_query_no_inverse_no_ledger(monkeypatch)
     test_inverse_from_results_prefers_connector_over_static(monkeypatch)
+    test_inverse_from_results_handles_path_based_inverse(monkeypatch)
+    test_convergence_kvm_navigate_path_inverse_matches_ledger(monkeypatch)
   urirun_connector_twin/__init__.py:
   urirun_connector_twin/browser.py:
     e: _proc_cmdline,_is_browser,_extract_flag,_cdp_pages,_cdp_cookies,_has_auth_cookie,_port_open,discover_browser_sessions,select_session,_extract_chrome_info,select_best_session,_domain_key,_selection
@@ -494,7 +499,6 @@ D:
     _docker_probe(sc)
     _simulated_probe(sc)
     probe_reversibility(scenario)
-  urirun_connector_twin/session.py:
 ```
 
 ### `project/logic.pl`
@@ -507,10 +511,11 @@ project_metadata('urirun-connector-twin', '0.1.0', 'python').
 project_file('app.doql.less', 32, 'less').
 project_file('project.sh', 69, 'shell').
 project_file('tests/test_browser_session.py', 270, 'python').
+project_file('tests/test_contract.py', 40, 'python').
 project_file('tests/test_dispatch.py', 209, 'python').
 project_file('tests/test_rollback_parity.py', 380, 'python').
 project_file('tests/test_session.py', 233, 'python').
-project_file('tests/test_twin_connector.py', 1275, 'python').
+project_file('tests/test_twin_connector.py', 1340, 'python').
 project_file('tree.sh', 5, 'shell').
 project_file('urirun_connector_twin/__init__.py', 5, 'python').
 project_file('urirun_connector_twin/browser.py', 328, 'python').
@@ -521,7 +526,6 @@ project_file('urirun_connector_twin/mock.py', 115, 'python').
 project_file('urirun_connector_twin/planner.py', 128, 'python').
 project_file('urirun_connector_twin/prompt_plan.py', 260, 'python').
 project_file('urirun_connector_twin/sandbox.py', 163, 'python').
-project_file('urirun_connector_twin/session.py', 25, 'python').
 
 % ── Python Functions ─────────────────────────────────────
 python_function('tests/test_browser_session.py', 'test_derive_task_target_linkedin', 0, 3, 1).
@@ -709,6 +713,8 @@ python_function('tests/test_twin_connector.py', 'test_append_twin_widget_emits_e
 python_function('tests/test_twin_connector.py', 'test_convergence_navigate_inverse_matches_rollback_ledger', 1, 9, 7).
 python_function('tests/test_twin_connector.py', 'test_convergence_query_no_inverse_no_ledger', 1, 7, 7).
 python_function('tests/test_twin_connector.py', 'test_inverse_from_results_prefers_connector_over_static', 1, 4, 5).
+python_function('tests/test_twin_connector.py', 'test_inverse_from_results_handles_path_based_inverse', 1, 2, 2).
+python_function('tests/test_twin_connector.py', 'test_convergence_kvm_navigate_path_inverse_matches_ledger', 1, 7, 6).
 python_function('urirun_connector_twin/browser.py', '_proc_cmdline', 1, 2, 4).
 python_function('urirun_connector_twin/browser.py', '_is_browser', 1, 3, 3).
 python_function('urirun_connector_twin/browser.py', '_extract_flag', 2, 3, 3).
@@ -803,6 +809,8 @@ python_function('urirun_connector_twin/sandbox.py', '_simulated_probe', 1, 1, 7)
 python_function('urirun_connector_twin/sandbox.py', 'probe_reversibility', 1, 2, 4).
 
 % ── Python Classes ───────────────────────────────────────
+python_class('tests/test_contract.py', 'TestTwinConnectorContract').
+python_method('TestTwinConnectorContract', 'test_twin_routes_present', 0, 5, 2).
 python_class('urirun_connector_twin/sandbox.py', 'Scenario').
 
 % ── Dependencies ─────────────────────────────────────────
@@ -843,11 +851,11 @@ sumd_interface('cli', '').
 | `plan_from_prompt_route` *(in urirun_connector_twin.core)* | 13 ⚠ | 0 | 18 | **18** |
 | `mock_start_probe_stop` *(in urirun_connector_twin.core)* | 7 | 0 | 16 | **16** |
 | `annotate_steps` *(in urirun_connector_twin.planner)* | 8 | 2 | 13 | **15** |
-| `select_session` *(in urirun_connector_twin.browser)* | 15 ⚠ | 3 | 11 | **14** |
+| `flow_preflight` *(in urirun_connector_twin.core)* | 9 | 0 | 14 | **14** |
 
 ```toon markpact:analysis path=project/calls.toon.yaml
 # code2llm call graph | /home/tom/github/if-uri/urirun-connector-twin
-# generated in 0.03s
+# generated in 0.04s
 # nodes: 76 | edges: 94 | modules: 8
 # CC̄=4.1
 
@@ -866,20 +874,20 @@ HUBS[20]:
     CC=7  in:0  out:16  total:16
   urirun_connector_twin.planner.annotate_steps
     CC=8  in:2  out:13  total:15
-  urirun_connector_twin.browser.select_session
-    CC=15  in:3  out:11  total:14
   urirun_connector_twin.core.flow_preflight
     CC=9  in:0  out:14  total:14
+  urirun_connector_twin.browser.select_session
+    CC=15  in:3  out:11  total:14
   urirun_connector_twin.sandbox._simulated_probe
     CC=1  in:1  out:12  total:13
-  urirun_connector_twin.core.browser_profile
-    CC=7  in:0  out:12  total:12
-  urirun_connector_twin.prompt_plan._raw_steps_for_target
-    CC=13  in:1  out:11  total:12
-  urirun_connector_twin.core.step_feasibility
-    CC=4  in:0  out:12  total:12
   urirun_connector_twin.core._prompt_result
     CC=5  in:1  out:11  total:12
+  urirun_connector_twin.prompt_plan._raw_steps_for_target
+    CC=13  in:1  out:11  total:12
+  urirun_connector_twin.core.browser_profile
+    CC=7  in:0  out:12  total:12
+  urirun_connector_twin.core.step_feasibility
+    CC=4  in:0  out:12  total:12
   urirun_connector_twin.dispatch.uri_call
     CC=10  in:6  out:5  total:11
   urirun_connector_twin.prompt_plan.derive_task_target
@@ -990,28 +998,28 @@ EDGES:
   urirun_connector_twin.planner.annotate_steps → urirun_connector_twin.planner._step_surface
   urirun_connector_twin.planner.build_imperative_plan → urirun_connector_twin.planner.extract_steps_from_flow
   urirun_connector_twin.planner.build_imperative_plan → urirun_connector_twin.planner.annotate_steps
-  urirun_connector_twin.core._local_browser_profile → urirun_connector_twin.browser.discover_browser_sessions
-  urirun_connector_twin.core._local_browser_profile → urirun_connector_twin.browser.select_session
-  urirun_connector_twin.core._prompt_result → urirun_connector_twin.mock.generate_mock
-  urirun_connector_twin.core.environment_profile → urirun_connector_twin.environment.probe
-  urirun_connector_twin.core.constraints_from_profile → urirun_connector_twin.core._safe_import
-  urirun_connector_twin.core.browser_sessions → urirun_connector_twin.browser.discover_browser_sessions
-  urirun_connector_twin.core.browser_profile → urirun_connector_twin.browser.discover_browser_sessions
-  urirun_connector_twin.core.browser_profile → urirun_connector_twin.browser.select_session
-  urirun_connector_twin.core.browser_profile → urirun_connector_twin.prompt_plan.derive_task_target
-  urirun_connector_twin.core.plan_from_prompt_route → urirun_connector_twin.prompt_plan.derive_task_target
-  urirun_connector_twin.core.plan_from_prompt_route → urirun_connector_twin.prompt_plan.plan_from_prompt
-  urirun_connector_twin.core.plan_from_prompt_route → urirun_connector_twin.dispatch.uri_call
-  urirun_connector_twin.core.plan_from_prompt_route → urirun_connector_twin.core._prompt_result
-  urirun_connector_twin.core.plan_from_prompt_route → urirun_connector_twin.dispatch.value_of
-  urirun_connector_twin.core.plan_from_prompt_route → urirun_connector_twin.environment.probe
-  urirun_connector_twin.core.plan_annotate → urirun_connector_twin.planner.build_imperative_plan
-  urirun_connector_twin.core.plan_generate → urirun_connector_twin.environment.probe
-  urirun_connector_twin.core.plan_generate → urirun_connector_twin.planner.build_imperative_plan
-  urirun_connector_twin.core.plan_generate → urirun_connector_twin.mock.generate_mock
-  urirun_connector_twin.core.mock_create → urirun_connector_twin.environment.probe
-  urirun_connector_twin.core.mock_create → urirun_connector_twin.planner.build_imperative_plan
-  urirun_connector_twin.core.mock_create → urirun_connector_twin.mock.generate_mock
+  urirun_connector_twin.prompt_plan._extract_domain → urirun_connector_twin.prompt_plan._extract_url
+  urirun_connector_twin.prompt_plan._browser_fill_and_submit_steps → urirun_connector_twin.prompt_plan._browser_open_steps
+  urirun_connector_twin.prompt_plan._classify_task_type → urirun_connector_twin.prompt_plan._location_ok
+  urirun_connector_twin.prompt_plan.derive_task_target → urirun_connector_twin.prompt_plan._extract_domain
+  urirun_connector_twin.prompt_plan.derive_task_target → urirun_connector_twin.prompt_plan._extract_url
+  urirun_connector_twin.prompt_plan.derive_task_target → urirun_connector_twin.prompt_plan._extract_text_to_type
+  urirun_connector_twin.prompt_plan.derive_task_target → urirun_connector_twin.prompt_plan._classify_task_type
+  urirun_connector_twin.prompt_plan._raw_steps_for_target → urirun_connector_twin.prompt_plan._fallback_describe_steps
+  urirun_connector_twin.prompt_plan._raw_steps_for_target → urirun_connector_twin.prompt_plan._post_on_social_steps
+  urirun_connector_twin.prompt_plan._raw_steps_for_target → urirun_connector_twin.prompt_plan._search_steps
+  urirun_connector_twin.prompt_plan._raw_steps_for_target → urirun_connector_twin.prompt_plan._browser_fill_and_submit_steps
+  urirun_connector_twin.prompt_plan._raw_steps_for_target → urirun_connector_twin.prompt_plan._browser_open_steps
+  urirun_connector_twin.prompt_plan._raw_steps_for_target → urirun_connector_twin.prompt_plan._screenshot_steps
+  urirun_connector_twin.prompt_plan._raw_steps_for_target → urirun_connector_twin.prompt_plan._service_start_steps
+  urirun_connector_twin.prompt_plan._raw_steps_for_target → urirun_connector_twin.prompt_plan._service_stop_steps
+  urirun_connector_twin.prompt_plan._raw_steps_for_target → urirun_connector_twin.prompt_plan._extract_query
+  urirun_connector_twin.prompt_plan._raw_steps_for_target → urirun_connector_twin.prompt_plan._guess_service_name
+  urirun_connector_twin.prompt_plan.steps_from_prompt → urirun_connector_twin.prompt_plan._bind_node
+  urirun_connector_twin.prompt_plan.steps_from_prompt → urirun_connector_twin.prompt_plan._raw_steps_for_target
+  urirun_connector_twin.prompt_plan.steps_from_prompt → urirun_connector_twin.prompt_plan.derive_task_target
+  urirun_connector_twin.prompt_plan.plan_from_prompt → urirun_connector_twin.prompt_plan.derive_task_target
+  urirun_connector_twin.prompt_plan.plan_from_prompt → urirun_connector_twin.prompt_plan.steps_from_prompt
 ```
 
 ## Test Contracts

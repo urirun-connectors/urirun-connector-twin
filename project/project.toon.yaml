@@ -1,4 +1,4 @@
-# urirun-connector-twin | 92 func | 8f | 3169L | python | 2026-06-26
+# urirun-connector-twin | 92 func | 8f | 3145L | python | 2026-06-26
 # generated in 0.00s
 
 HEALTH:
@@ -13,10 +13,10 @@ ALERTS[11]:
   !   high_fan_out     plan_from_prompt_route = 12 (limit:10)
   !   high_fan_out     flow_preflight = 12 (limit:10)
   !   high_fan_out     probe = 11 (limit:10)
+  !   high_fan_out     _raw_steps_for_target = 10 (limit:10)
   !   high_fan_out     browser_profile = 10 (limit:10)
-  !   high_fan_out     flow_rollback = 10 (limit:10)
 
-MODULES[18] (top by size):
+MODULES[17] (top by size):
   M[connector.manifest.json] 616L C:0 F:0 CC↑0 D:0 (json)
   M[urirun_connector_twin/core.py] 573L C:0 F:28 CC↑13 D:0 (python)
   M[planfile.yaml] 487L C:0 F:0 CC↑0 D:0 (yaml)
@@ -31,8 +31,8 @@ MODULES[18] (top by size):
   M[project.sh] 69L C:0 F:0 CC↑0 D:0 (shell)
   M[pyproject.toml] 28L C:0 F:0 CC↑0 D:0 (toml)
   M[testql-scenarios/generated-from-pytests.testql.toon.yaml] 28L C:0 F:0 CC↑0 D:0 (yaml)
-  M[urirun_connector_twin/session.py] 24L C:0 F:0 CC↑0 D:0 (python)
-  LANGS: python:10/yaml:4/shell:2/json:1/toml:1
+  M[testql-scenarios/generated-cli-tests.testql.toon.yaml] 20L C:0 F:0 CC↑0 D:0 (yaml)
+  LANGS: python:9/yaml:4/shell:2/json:1/toml:1
 
 HOTSPOTS[9]:
   ★ _cdp_cookies fan=22  // Fetch all cookies via CDP Network.getAllCookies (one-shot WS call).
@@ -57,4 +57,4 @@ REFACTOR[5]:
   [5] M/M Reduce _cdp_cookies fan-out (currently 22)
 
 EVOLUTION:
-  2026-06-26 CC̄=4.1 crit=9 3169L // Automated analysis
+  2026-06-26 CC̄=4.1 crit=9 3145L // Automated analysis

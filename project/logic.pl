@@ -5,10 +5,11 @@ project_metadata('urirun-connector-twin', '0.1.0', 'python').
 project_file('app.doql.less', 32, 'less').
 project_file('project.sh', 69, 'shell').
 project_file('tests/test_browser_session.py', 270, 'python').
+project_file('tests/test_contract.py', 40, 'python').
 project_file('tests/test_dispatch.py', 209, 'python').
 project_file('tests/test_rollback_parity.py', 380, 'python').
 project_file('tests/test_session.py', 233, 'python').
-project_file('tests/test_twin_connector.py', 1275, 'python').
+project_file('tests/test_twin_connector.py', 1340, 'python').
 project_file('tree.sh', 5, 'shell').
 project_file('urirun_connector_twin/__init__.py', 5, 'python').
 project_file('urirun_connector_twin/browser.py', 328, 'python').
@@ -19,7 +20,6 @@ project_file('urirun_connector_twin/mock.py', 115, 'python').
 project_file('urirun_connector_twin/planner.py', 128, 'python').
 project_file('urirun_connector_twin/prompt_plan.py', 260, 'python').
 project_file('urirun_connector_twin/sandbox.py', 163, 'python').
-project_file('urirun_connector_twin/session.py', 25, 'python').
 
 % ── Python Functions ─────────────────────────────────────
 python_function('tests/test_browser_session.py', 'test_derive_task_target_linkedin', 0, 3, 1).
@@ -207,6 +207,8 @@ python_function('tests/test_twin_connector.py', 'test_append_twin_widget_emits_e
 python_function('tests/test_twin_connector.py', 'test_convergence_navigate_inverse_matches_rollback_ledger', 1, 9, 7).
 python_function('tests/test_twin_connector.py', 'test_convergence_query_no_inverse_no_ledger', 1, 7, 7).
 python_function('tests/test_twin_connector.py', 'test_inverse_from_results_prefers_connector_over_static', 1, 4, 5).
+python_function('tests/test_twin_connector.py', 'test_inverse_from_results_handles_path_based_inverse', 1, 2, 2).
+python_function('tests/test_twin_connector.py', 'test_convergence_kvm_navigate_path_inverse_matches_ledger', 1, 7, 6).
 python_function('urirun_connector_twin/browser.py', '_proc_cmdline', 1, 2, 4).
 python_function('urirun_connector_twin/browser.py', '_is_browser', 1, 3, 3).
 python_function('urirun_connector_twin/browser.py', '_extract_flag', 2, 3, 3).
@@ -301,6 +303,8 @@ python_function('urirun_connector_twin/sandbox.py', '_simulated_probe', 1, 1, 7)
 python_function('urirun_connector_twin/sandbox.py', 'probe_reversibility', 1, 2, 4).
 
 % ── Python Classes ───────────────────────────────────────
+python_class('tests/test_contract.py', 'TestTwinConnectorContract').
+python_method('TestTwinConnectorContract', 'test_twin_routes_present', 0, 5, 2).
 python_class('urirun_connector_twin/sandbox.py', 'Scenario').
 
 % ── Dependencies ─────────────────────────────────────────

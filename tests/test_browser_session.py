@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import pytest
-from urirun_connector_twin.session import (
+from urirun_connector_twin.browser import (
     _extract_chrome_info,
     select_best_session,
     _AUTH_COOKIES,
