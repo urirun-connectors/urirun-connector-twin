@@ -532,19 +532,22 @@ def test_execute_flow_auto_envelope_uses_thin_driver():
         # actual step — succeed
         return {"ok": True, "result": {"value": {"data": "done"}}}
 
+    # Use a CDP step so _plan_with_preflight injects a preflight step as step 0.
     flow = {
         "task": {"id": "t1", "title": "test"},
         "steps": [
-            {"id": "s1", "uri": "kvm://host/screen/query/info", "payload": {}},
+            {"id": "s1", "uri": "kvm://host/cdp/page/command/navigate", "payload": {"url": "https://example.com"}},
         ]
     }
     out = execute_flow(flow, {}, {}, execute=True, dispatch_uri=fake_dispatch)
     assert out["ok"] is True
-    # thin driver called preflight and goal-verify
-    assert any("preflight" in c for c in calls)
+    # thin driver ran preflight (injected as step 0) and goal-verify
+    assert any("preflight" in c for c in calls), f"expected preflight call in {calls}"
     assert any("goal" in c or "verify" in c for c in calls)
     # timeline present (thin driver output)
     assert "timeline" in out
+    # preflight is first entry in timeline
+    assert any("preflight" in (t.get("uri") or "") for t in out["timeline"])
 
 
 def test_execute_flow_without_dispatch_uses_orchestrator():
