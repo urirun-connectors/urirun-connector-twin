@@ -49,7 +49,9 @@ class TestFlowRecallRoute(unittest.TestCase):
         steps = [{"id": "s", "uri": "kvm://host/screen/query/capture"}]
         ep = _ok_episode("ep-abc123", "zrób screenshot", steps)
         self._mem().remember_episode(ep)
-        result = core.flow_recall(episode_id="ep-abc123")
+        # skip_drift_check avoids the v2_service.call to twin://host/env/query/drift
+        # which has no live mesh in unit tests.
+        result = core.flow_recall(episode_id="ep-abc123", skip_drift_check=True)
         self.assertTrue(result.get("ok"))
         self.assertTrue(result.get("found"))
         self.assertEqual(result.get("source"), "episode")
@@ -59,7 +61,11 @@ class TestFlowRecallRoute(unittest.TestCase):
         steps = [{"id": "s", "uri": "kvm://host/screen/query/capture"}]
         ep = _ok_episode("ep-bbb", "capture screen", steps, env_fp="fp-xyz")
         self._mem().remember_episode(ep)
-        result = core.flow_recall(prompt="capture screen", env_fp="fp-xyz")
+        # Mock the drift check so no live mesh is required; returns no-drift.
+        def _no_drift(uri, payload, registry, mode):
+            return {"ok": True, "result": {"value": {"drift": False, "known": True}}}
+        with mock.patch("urirun.v2_service.call", side_effect=_no_drift):
+            result = core.flow_recall(prompt="capture screen", env_fp="fp-xyz")
         self.assertTrue(result.get("found"))
         self.assertEqual(result.get("source"), "episode")
 
