@@ -15,7 +15,7 @@ project_file('tests/test_twin_connector.py', 1407, 'python').
 project_file('tree.sh', 5, 'shell').
 project_file('urirun_connector_twin/__init__.py', 5, 'python').
 project_file('urirun_connector_twin/browser.py', 328, 'python').
-project_file('urirun_connector_twin/core.py', 612, 'python').
+project_file('urirun_connector_twin/core.py', 615, 'python').
 project_file('urirun_connector_twin/dispatch.py', 73, 'python').
 project_file('urirun_connector_twin/environment.py', 162, 'python').
 project_file('urirun_connector_twin/mock.py', 115, 'python').

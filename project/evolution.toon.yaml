@@ -3,8 +3,8 @@
 
 NEXT[5] (ranked by impact):
   [1] !! SPLIT           urirun_connector_twin/core.py
-      WHY: 611L, 0 classes, max CC=13
-      EFFORT: ~4h  IMPACT: 7943
+      WHY: 614L, 0 classes, max CC=13
+      EFFORT: ~4h  IMPACT: 7982
 
   [2] !  SPLIT-FUNC      discover_browser_sessions  CC=15  fan=13
       WHY: CC=15 exceeds 15
@@ -19,7 +19,7 @@ NEXT[5] (ranked by impact):
       EFFORT: ~4h  IMPACT: 0
 
   [5] !! SPLIT           planfile.yaml
-      WHY: 565L, 0 classes, max CC=0
+      WHY: 591L, 0 classes, max CC=0
       EFFORT: ~4h  IMPACT: 0
 
 
@@ -60,4 +60,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=4.1 → now CC̄=4.0
+  prev CC̄=4.0 → now CC̄=4.0

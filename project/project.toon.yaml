@@ -1,4 +1,4 @@
-# urirun-connector-twin | 102 func | 9f | 3416L | python | 2026-06-26
+# urirun-connector-twin | 102 func | 9f | 3445L | python | 2026-06-26
 # generated in 0.00s
 
 HEALTH:
@@ -14,12 +14,12 @@ ALERTS[12]:
   !   high_fan_out     flow_preflight = 12 (limit:10)
   !   high_fan_out     probe = 11 (limit:10)
   !   high_fan_out     _raw_steps_for_target = 10 (limit:10)
-  !   high_fan_out     preflight_step = 10 (limit:10)
+  !   high_fan_out     browser_profile = 10 (limit:10)
 
 MODULES[18] (top by size):
   M[connector.manifest.json] 616L C:0 F:0 CC↑0 D:0 (json)
-  M[urirun_connector_twin/core.py] 611L C:0 F:32 CC↑13 D:0 (python)
-  M[planfile.yaml] 565L C:0 F:0 CC↑0 D:0 (yaml)
+  M[urirun_connector_twin/core.py] 614L C:0 F:32 CC↑13 D:0 (python)
+  M[planfile.yaml] 591L C:0 F:0 CC↑0 D:0 (yaml)
   M[urirun_connector_twin/browser.py] 327L C:0 F:13 CC↑15 D:2 (python)
   M[urirun_connector_twin/prompt_plan.py] 259L C:0 F:21 CC↑13 D:2 (python)
   M[urirun_connector_twin/sandbox.py] 176L C:1 F:9 CC↑6 D:1 (python)
@@ -50,11 +50,11 @@ Calls twin://host/browser/query/profile
 For CD
 
 REFACTOR[6]:
-  [1] H/H Split god module urirun_connector_twin/core.py (611L, 0 classes)
+  [1] H/H Split god module urirun_connector_twin/core.py (614L, 0 classes)
   [2] H/H Split god module connector.manifest.json (616L, 0 classes)
-  [3] H/H Split god module planfile.yaml (565L, 0 classes)
+  [3] H/H Split god module planfile.yaml (591L, 0 classes)
   [4] M/L Split discover_browser_sessions (CC=15)
   [5] M/L Split select_session (CC=15)
 
 EVOLUTION:
-  2026-06-26 CC̄=4.0 crit=10 3416L // Automated analysis
+  2026-06-26 CC̄=4.0 crit=10 3445L // Automated analysis

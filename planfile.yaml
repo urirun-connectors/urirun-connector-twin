@@ -563,3 +563,29 @@ sprints:
     model_hints:
       planning: balanced
       implementation: balanced
+  - id: ticket-ffcc9744
+    name: Fix smart-return-type issues
+    description: Resolve 6 smart-return-type issues in tests/test_proof_routes.py
+    task_type: prefactor
+    priority: high
+    estimate: 2d
+    files:
+    - tests/test_proof_routes.py
+    rule_id: smart-return-type
+    count: 6
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-b52137f6
+    name: Fix ai-boilerplate issues
+    description: Resolve 1 ai-boilerplate issues in tests/test_proof_routes.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - tests/test_proof_routes.py
+    rule_id: ai-boilerplate
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced

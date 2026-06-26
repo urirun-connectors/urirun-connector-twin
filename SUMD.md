@@ -163,7 +163,7 @@ pip install -e .[dev]
 ### `project/map.toon.yaml`
 
 ```toon markpact:analysis path=project/map.toon.yaml
-# urirun-connector-twin | 21f 4939L | python:18,shell:2,less:1 | 2026-06-26
+# urirun-connector-twin | 21f 4942L | python:18,shell:2,less:1 | 2026-06-26
 # stats: 289 func | 9 cls | 21 mod | CC̄=3.7 | critical:13 | cycles:0
 # alerts[5]: CC test_append_twin_widget_emits_events_with_inverse=20; CC discover_browser_sessions=15; CC select_session=15; CC _cdp_cookies=13; CC plan_from_prompt_route=13
 # hotspots[5]: _cdp_cookies fan=19; discover_browser_sessions fan=13; mock_start_probe_stop fan=13; plan_from_prompt_route fan=11; flow_preflight fan=10
@@ -183,7 +183,7 @@ M[21]:
   tree.sh,5
   urirun_connector_twin/__init__.py,5
   urirun_connector_twin/browser.py,328
-  urirun_connector_twin/core.py,612
+  urirun_connector_twin/core.py,615
   urirun_connector_twin/dispatch.py,73
   urirun_connector_twin/environment.py,162
   urirun_connector_twin/mock.py,115
@@ -547,7 +547,7 @@ project_file('tests/test_twin_connector.py', 1407, 'python').
 project_file('tree.sh', 5, 'shell').
 project_file('urirun_connector_twin/__init__.py', 5, 'python').
 project_file('urirun_connector_twin/browser.py', 328, 'python').
-project_file('urirun_connector_twin/core.py', 612, 'python').
+project_file('urirun_connector_twin/core.py', 615, 'python').
 project_file('urirun_connector_twin/dispatch.py', 73, 'python').
 project_file('urirun_connector_twin/environment.py', 162, 'python').
 project_file('urirun_connector_twin/mock.py', 115, 'python').
@@ -962,10 +962,10 @@ HUBS[20]:
     CC=13  in:1  out:11  total:12
   urirun_connector_twin.proof_cache.proof_record
     CC=10  in:2  out:10  total:12
-  urirun_connector_twin.core.step_feasibility
-    CC=4  in:0  out:12  total:12
   urirun_connector_twin.core._prompt_result
     CC=5  in:1  out:11  total:12
+  urirun_connector_twin.core.step_feasibility
+    CC=4  in:0  out:12  total:12
   urirun_connector_twin.core.browser_profile
     CC=7  in:0  out:12  total:12
   urirun_connector_twin.dispatch.uri_call
