@@ -627,6 +627,31 @@ def flow_execute(
     )
 
 
+def _env_drift_ok(mem: object, node: str, skip: bool) -> bool:
+    """True when the node's live env matches its known-good fingerprint (no drift).
+
+    Fails OPEN when the live profile is unavailable/empty — indeterminate drift must not
+    permanently disable the env-matched recall path.  Fails CLOSED only on a genuine probe
+    exception (offline node), where we cannot trust the live env and should re-plan."""
+    if skip:
+        return True
+    try:
+        import urirun.v2_service as _svc  # noqa: PLC0415
+        prof_r = _svc.call(f"kvm://{node}/env/query/profile", {}, {}, mode="execute")
+        val = prof_r.get("result") or {}
+        if isinstance(val, dict) and "value" in val:
+            val = val["value"]
+        profile = val if isinstance(val, dict) else {}
+        if not profile:
+            return True  # indeterminate → allow (preflight re-validates)
+        verdict = mem.drift(node, profile)  # type: ignore[union-attr]
+        if not verdict.get("known"):
+            return True  # no baseline yet → allow
+        return not verdict.get("drifted")
+    except Exception:  # noqa: BLE001 — offline node → re-plan, don't replay
+        return False
+
+
 @conn.handler("flow/query/recall",
               meta={"label": "Return a cached flow plan by intent × env — the pre-LLM recall gate as URI"})
 def flow_recall(
@@ -643,44 +668,13 @@ def flow_recall(
       2. intent_sig × env_fp — recall_episode (env-conditioned, strongest match)
       3. intent_sig alone — recall_flow_by_intent (env-agnostic fallback, no drift guard)
 
-    For tiers 1 and 2 (env-conditioned recall) the drift gate is consulted: if the current
-    environment has drifted from the stored known-good fingerprint the recall is suppressed
-    (returns found=False, driftDetected=True) so the caller falls through to make_flow with
-    a fresh plan.  Tier 3 (flow_store, intent-only) skips the drift check intentionally —
-    it is offered as a hint, not a guarantee, and is always re-validated by preflight.
+    Tiers 1 and 2 consult the drift gate: if the env drifted from the known-good fingerprint,
+    recall is suppressed (found=False, driftDetected=True) so the caller re-plans fresh.
+    Tier 3 (flow_store, intent-only) skips the drift check — offered as a hint, not a guarantee.
 
-    Returns {found: True, steps, source, episode_id?} or {found: False, steps: []}.
-    Callers use steps to build a flow dict and skip make_flow when found=True."""
+    Returns {found: True, steps, source, episode_id?} or {found: False, steps: []}."""
     from urirun.node.twin_store import durable_memory  # noqa: PLC0415
     mem = durable_memory()
-
-    def _drift_ok() -> bool:
-        """True when the node's live env matches its known-good fingerprint (no drift).
-
-        Computes drift IN-PROCESS from the kvm env profile + the durable known-good baseline. We do
-        NOT round-trip through `twin://<node>/env/query/drift`: the twin scheme is contended (the flow
-        connector and this connector both claim it) so that route does not dispatch reliably, and the
-        baseline lives right here in `mem`. Fails OPEN when the live profile is unavailable/empty —
-        indeterminate drift must not permanently disable the env-matched recall path, and the recalled
-        flow is re-validated by preflight; fails CLOSED only on a genuine probe EXCEPTION (offline
-        node), where we cannot trust the live env and should re-plan."""
-        if skip_drift_check:
-            return True
-        try:
-            import urirun.v2_service as _svc  # noqa: PLC0415
-            prof_r = _svc.call(f"kvm://{node}/env/query/profile", {}, {}, mode="execute")
-            val = prof_r.get("result") or {}
-            if isinstance(val, dict) and "value" in val:
-                val = val["value"]
-            profile = val if isinstance(val, dict) else {}
-            if not profile:
-                return True  # no live profile → indeterminate → allow (preflight re-validates)
-            verdict = mem.drift(node, profile)
-            if not verdict.get("known"):
-                return True  # no baseline yet → allow
-            return not verdict.get("drifted")
-        except Exception:  # noqa: BLE001 — live probe failed (offline node) → re-plan, don't replay
-            return False
 
     # 1. Direct episode lookup (content-addressed; drift gate guards replay)
     if episode_id:
@@ -688,7 +682,7 @@ def flow_recall(
         if ep and (ep.get("outcome") or {}).get("status") == "ok":
             steps = (ep.get("plan") or {}).get("steps") or []
             if steps:
-                if not _drift_ok():
+                if not _env_drift_ok(mem, node, skip_drift_check):
                     return urirun.ok(found=False, steps=[], driftDetected=True,
                                      reason="env drifted from known-good — re-plan required")
                 return urirun.ok(found=True, steps=steps, source="episode",
@@ -702,7 +696,7 @@ def flow_recall(
         if ep:
             steps = (ep.get("plan") or {}).get("steps") or []
             if steps:
-                if not _drift_ok():
+                if not _env_drift_ok(mem, node, skip_drift_check):
                     return urirun.ok(found=False, steps=[], driftDetected=True,
                                      reason="env drifted from known-good — re-plan required")
                 return urirun.ok(found=True, steps=steps, source="episode",

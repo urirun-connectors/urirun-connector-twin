@@ -156,6 +156,72 @@ def _route_candidate(route: dict, score: float, provenance: list[dict]) -> dict:
     }
 
 
+def _collect_exact_episodes(
+    memory: Any, sig: str, fingerprint: str, raw_episodes: list[dict]
+) -> tuple[list[dict], set[str]]:
+    """Return episodes whose intent_sig matches exactly, and the set of their IDs."""
+    episodes: list[dict] = []
+    seen: set[str] = set()
+    for ep in raw_episodes:
+        ep_sig = ep.get("intent_sig") or _intent_signature(_episode_goal(ep))
+        if ep_sig != sig:
+            continue
+        eid = str(ep.get("episode_id") or "")
+        seen.add(eid)
+        provenance = [{"edge": "intent_sig", "kind": "exact"}]
+        if fingerprint:
+            provenance.append({"edge": "environment_fingerprint", "kind": "exact"})
+        episodes.append(_episode_candidate(ep, 1.0, provenance))
+    return episodes, seen
+
+
+def _collect_similar_episodes(
+    raw_episodes: list[dict], seen: set[str], intent: str,
+    embedder: Embedder | None, k: int
+) -> tuple[list[dict], dict]:
+    """Return up-to-k additional episodes ranked by embedding similarity (skipping seen IDs)."""
+    unseen = [(ep, _episode_goal(ep)) for ep in raw_episodes
+              if str(ep.get("episode_id") or "") not in seen]
+    ranked, meta = _rank_by_embedding(intent, unseen, embedder=embedder)
+    episodes: list[dict] = []
+    for ep, score in ranked:
+        if len(episodes) >= k:
+            break
+        episodes.append(_episode_candidate(
+            ep, score,
+            [{"edge": "intent_embedding", "kind": "similarity", "provider": meta.get("provider")}],
+        ))
+    return episodes, meta
+
+
+def _collect_matching_flows(memory: Any, sig: str, k: int) -> list[dict]:
+    """Return up-to-k named flows whose intent_sig matches exactly, newest first."""
+    flow_store = getattr(memory, "flow_store", None)
+    flow_items = flow_store.items() if hasattr(flow_store, "items") else []
+    flows: list[dict] = []
+    for key, rec in flow_items:
+        if not isinstance(rec, dict) or rec.get("degraded"):
+            continue
+        if rec.get("intent_sig") == sig:
+            flows.append(_flow_candidate(str(key), rec, 1.0, [{"edge": "intent_sig", "kind": "exact"}]))
+    return sorted(flows, key=lambda item: str(item.get("ts") or ""), reverse=True)[:k]
+
+
+def _collect_similar_routes(
+    routes: list[dict] | None, intent: str, embedder: Embedder | None, k: int
+) -> tuple[list[dict], dict]:
+    """Return up-to-k routes ranked by embedding similarity."""
+    valid = [(r, _route_text(r)) for r in (routes or []) if isinstance(r, dict) and r.get("uri")]
+    ranked, meta = _rank_by_embedding(intent, valid, embedder=embedder)
+    candidates = [
+        _route_candidate(r, score,
+                         [{"edge": "route_embedding", "kind": "similarity",
+                           "provider": meta.get("provider")}])
+        for r, score in ranked[:k]
+    ]
+    return candidates, meta
+
+
 def _preference_candidates(memory: Any, node: str, fingerprint: str, k: int) -> list[dict]:
     store = getattr(memory, "preference_store", None)
     values = store.values() if hasattr(store, "values") else []
@@ -187,79 +253,38 @@ def retrieve_experience(intent: str, fingerprint: str = "", *, k: int = 5, node:
         memory = durable_memory()
     k = max(1, int(k or 5))
     sig = _intent_signature(intent)
-    episodes: list[dict] = []
-    seen_episodes: set[str] = set()
 
     raw_episodes = [
         ep for ep in (memory.known_good_episodes() if hasattr(memory, "known_good_episodes") else [])
         if isinstance(ep, dict) and _eligible_episode(ep, fingerprint)
     ]
-    for ep in raw_episodes:
-        ep_sig = ep.get("intent_sig") or _intent_signature(_episode_goal(ep))
-        if ep_sig != sig:
-            continue
-        eid = str(ep.get("episode_id") or "")
-        seen_episodes.add(eid)
-        provenance = [{"edge": "intent_sig", "kind": "exact"}]
-        if fingerprint:
-            provenance.append({"edge": "environment_fingerprint", "kind": "exact"})
-        episodes.append(_episode_candidate(ep, 1.0, provenance))
+    exact_eps, seen = _collect_exact_episodes(memory, sig, fingerprint, raw_episodes)
+    similar_eps, embedding_meta = _collect_similar_episodes(raw_episodes, seen, intent, embedder, k)
+    episodes = (exact_eps + similar_eps)[:k]
 
-    ranked_eps, embedding_meta = _rank_by_embedding(
-        intent,
-        [(ep, _episode_goal(ep)) for ep in raw_episodes if str(ep.get("episode_id") or "") not in seen_episodes],
-        embedder=embedder,
-    )
-    for ep, score in ranked_eps:
-        if len(episodes) >= k:
-            break
-        episodes.append(_episode_candidate(
-            ep,
-            score,
-            [{"edge": "intent_embedding", "kind": "similarity", "provider": embedding_meta.get("provider")}],
-        ))
+    flows = _collect_matching_flows(memory, sig, k)
+    route_candidates, route_embedding_meta = _collect_similar_routes(routes, intent, embedder, k)
 
-    flows: list[dict] = []
     flow_store = getattr(memory, "flow_store", None)
-    flow_items = flow_store.items() if hasattr(flow_store, "items") else []
-    for key, rec in flow_items:
-        if not isinstance(rec, dict) or rec.get("degraded"):
-            continue
-        if rec.get("intent_sig") == sig:
-            flows.append(_flow_candidate(str(key), rec, 1.0, [{"edge": "intent_sig", "kind": "exact"}]))
-    flows = sorted(flows, key=lambda item: str(item.get("ts") or ""), reverse=True)[:k]
-
-    ranked_routes, route_embedding_meta = _rank_by_embedding(
-        intent,
-        [(route, _route_text(route)) for route in (routes or []) if isinstance(route, dict) and route.get("uri")],
-        embedder=embedder,
-    )
-    route_candidates = [
-        _route_candidate(route, score, [{"edge": "route_embedding", "kind": "similarity",
-                                        "provider": route_embedding_meta.get("provider")}])
-        for route, score in ranked_routes[:k]
-    ]
-
+    flow_items = list(flow_store.items() if hasattr(flow_store, "items") else [])
     source_shape = {
-        "intent": intent,
-        "fingerprint": fingerprint,
-        "episodes": raw_episodes,
-        "flows": [(str(k), v) for k, v in flow_items],
+        "intent": intent, "fingerprint": fingerprint,
+        "episodes": raw_episodes, "flows": [(str(fk), fv) for fk, fv in flow_items],
         "routes": routes or [],
     }
-    degraded = []
-    for meta in (embedding_meta, route_embedding_meta):
-        if meta.get("degradedReason") and meta.get("degradedReason") not in degraded:
-            degraded.append(meta["degradedReason"])
-
+    degraded = list({
+        m["degradedReason"]
+        for m in (embedding_meta, route_embedding_meta)
+        if m.get("degradedReason")
+    })
     return {
         "kind": "experience-retrieval",
         "intent": intent,
         "fingerprint": fingerprint,
         "node": node,
         "k": k,
-        "episodes": episodes[:k],
-        "flows": flows[:k],
+        "episodes": episodes,
+        "flows": flows,
         "routes": route_candidates,
         "preferences": _preference_candidates(memory, node, fingerprint, k),
         "index": {
