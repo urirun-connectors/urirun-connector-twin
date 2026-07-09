@@ -31,6 +31,8 @@ from typing import Any
 
 import urirun
 
+from . import _urirun_compat
+
 from .browser import discover_browser_sessions, select_session
 from .dispatch import uri_call, value_of
 from .environment import probe
@@ -41,7 +43,7 @@ from .sandbox import Scenario, probe_reversibility, scenario_for_uri
 from .proof_cache import preflight_step, proof_check, proof_key, proof_record
 
 CONNECTOR_ID = "twin"
-conn = urirun.connector(CONNECTOR_ID, scheme="twin")
+conn = _urirun_compat.connector(CONNECTOR_ID, scheme="twin")
 
 
 # ─── helpers ──────────────────────────────────────────────────────────────────
@@ -837,14 +839,38 @@ def monitor_event(node: str = "", stateSig: str = "", narration: str = "") -> di
     return urirun.ok(node=node, stateSig=stateSig, narration=narration, received=True)
 
 
+
+@conn.handler("twin://host/doctor/query/report", isolated=True, meta={"label": "Connector readiness report"})
+def doctor() -> dict[str, Any]:
+    """Return a safe, read-only connector readiness report for CI smoke tests."""
+    return {
+        "ok": True,
+        "connector": CONNECTOR_ID,
+        "version": _connector_version(),
+        "status": "ready",
+    }
+
+
+def _connector_version() -> str:
+    try:
+        from importlib.metadata import version
+
+        return version("urirun-connector-twin")
+    except Exception:
+        return "0.1.0"
+
 def bindings() -> dict:
     return conn.bindings()
+
+
+def urirun_bindings() -> dict:
+    return bindings()
 
 
 def _manifest_prose() -> dict:
     """Load optional prose metadata without making bindings/CLI depend on it."""
     try:
-        prose = urirun.load_manifest(__package__)
+        prose = _urirun_compat.load_manifest(__package__)
     except FileNotFoundError:
         prose_path = Path(__file__).resolve().parent.parent / "connector.manifest.json"
         if not prose_path.exists():
