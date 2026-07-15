@@ -4,6 +4,7 @@ tests/test_browser_session.py
 tests/test_contract.py
 tests/test_contract_conformance.py
 tests/test_dispatch.py
+tests/test_experience_retrieve.py
 tests/test_proof_cache.py
 tests/test_proof_routes.py
 tests/test_recall_routes.py
@@ -11,11 +12,13 @@ tests/test_rollback_parity.py
 tests/test_session.py
 tests/test_twin_connector.py
 urirun_connector_twin/__init__.py
+urirun_connector_twin/_urirun_compat.py
 urirun_connector_twin/browser.py
 urirun_connector_twin/contracts.py
 urirun_connector_twin/core.py
 urirun_connector_twin/dispatch.py
 urirun_connector_twin/environment.py
+urirun_connector_twin/experience.py
 urirun_connector_twin/mock.py
 urirun_connector_twin/planner.py
 urirun_connector_twin/prompt_plan.py
