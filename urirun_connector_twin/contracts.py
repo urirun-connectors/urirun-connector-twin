@@ -339,4 +339,14 @@ CONTRACTS: dict[str, Contract] = {
         result=_ok(node="host", stateSig="env-1", narration="ready", received=True),
         errors=(),
     ),
+
+    "twin://host/doctor/query/report": Contract(
+        version="v1", effect="query",
+        inp={},
+        out={"ok": "const:true", "connector": "str", "version": "str", "status": "str"},
+        examples=(
+            {"payload": {},
+             "result": {"ok": True, "connector": "urirun-connector-twin",
+                        "version": "0.1.0", "status": "ready"}},
+        ), errors=()),
 }

@@ -676,7 +676,7 @@ def test_memory_dispatch_drift_sets_baseline_on_first_run(monkeypatch):
     import urirun.node.flow as flow_mod
     memory = _make_twin_memory()
     profile = {"best": "cdp", "platform": "linux"}
-    monkeypatch.setattr(flow_mod, "_fetch_env_profile", lambda step, reg: profile)
+    monkeypatch.setattr(flow_mod, "_fetch_env_profile", lambda step, reg, **kw: profile)
 
     dispatch = _make_memory_dispatch(lambda u, p: {"ok": True}, memory, {}, {})
     result = dispatch("twin://host/env/query/drift", {"node": "host"})
@@ -694,7 +694,7 @@ def test_memory_dispatch_drift_detects_change(monkeypatch):
     known = {"best": "cdp", "display": "1920x1080", "platform": "linux"}
     current = {"best": "atspi", "display": "2560x1440", "platform": "linux"}
     memory.remember("host", known)
-    monkeypatch.setattr(flow_mod, "_fetch_env_profile", lambda step, reg: current)
+    monkeypatch.setattr(flow_mod, "_fetch_env_profile", lambda step, reg, **kw: current)
 
     dispatch = _make_memory_dispatch(lambda u, p: {"ok": True}, memory, {}, {})
     result = dispatch("twin://host/env/query/drift", {"node": "host"})
@@ -709,7 +709,15 @@ def test_memory_dispatch_remember_updates_store(monkeypatch):
     import urirun.node.flow as flow_mod
     memory = _make_twin_memory()
     profile = {"best": "cdp", "platform": "linux"}
-    monkeypatch.setattr(flow_mod, "_fetch_env_profile", lambda step, reg: profile)
+
+    # The remember path advances the baseline via _remember_node_profile (a live
+    # v2_service.call probe), not _fetch_env_profile — patch that instead so this
+    # stays a unit test of the dispatch wiring, not an integration test needing a
+    # real registry route.
+    def fake_remember_node_profile(mem, node, registry, *, env_stable=False):
+        mem.remember(node, profile)
+        return "live"
+    monkeypatch.setattr(flow_mod, "_remember_node_profile", fake_remember_node_profile)
 
     flow = {"steps": [{"id": "a", "uri": "kvm://host/ui/command/click"}]}
     dispatch = _make_memory_dispatch(lambda u, p: {"ok": True}, memory, flow, {})
@@ -730,7 +738,7 @@ def test_execute_flow_with_memory_injects_drift_steps():
     calls = []
     dispatched = []
 
-    def fake_fetch(step, reg):
+    def fake_fetch(step, reg, **kw):
         return {"best": "cdp", "platform": "linux"}
 
     original_fetch = flow_mod._fetch_env_profile
